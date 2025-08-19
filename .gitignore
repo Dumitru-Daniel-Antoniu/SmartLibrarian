@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.env
+.venv/
+
+# Editors / IDEs
+.idea/
+
+# Logs / caches / tests
+.cache/
+.pytest_cache/
+
+# Streamlit cache
+.streamlit/
+
+# ChromaDB persistent storage
+storage/chroma_db/
