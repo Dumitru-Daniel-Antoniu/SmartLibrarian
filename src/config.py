@@ -13,6 +13,7 @@ class Settings:
     EMBED_MODEL: str
     CHAT_MODEL: str
     CHROMA_PATH: str
+    DATASET_PATH: str
     COLLECTION_NAME: str
     TOP_K: int
     TEMPERATURE: float
