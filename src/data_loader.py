@@ -23,6 +23,7 @@ def load_book_summaries() -> list[dict[str, str]]:
         return records
 
 
+# If case for running the script directly for testing purposes
 if __name__ == "__main__":
     summaries = load_book_summaries()
     for summary in summaries[:5]:
