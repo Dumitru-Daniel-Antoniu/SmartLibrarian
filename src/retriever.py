@@ -35,6 +35,13 @@ def semantic_search(
 
     collection = get_or_create_collection()
 
+    meta = getattr(collection, "metadatas", {}) or {}
+    build_with = meta.get("embed_model")
+    if build_with and build_with != settings.EMBED_MODEL:
+        raise RuntimeError("Not the same embedding model used")
+    else:
+        print("Equal")
+
     ids, documents, metadata, distances = query_single(collection, qv, n_results=top_k)
 
     hits = _pack_hits(ids, documents, metadata, distances)
@@ -46,7 +53,7 @@ def semantic_search(
         "raw": {
             "ids": ids,
             "documents": documents,
-            "metadata": metadata,
+            "metadatas": metadata,
             "distances": distances
         }
     }

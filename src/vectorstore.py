@@ -33,9 +33,10 @@ def get_or_create_collection(
     try:
         return client.get_collection(collection_name)
     except Exception:
+        print("Collection does not exist")
         return client.create_collection(
             name = collection_name,
-            metadata = {"hnsw:space": space}
+            metadata = {"hnsw:space": space, "embed_model": settings.EMBED_MODEL}
         )
 
 
@@ -53,7 +54,7 @@ def recreate_collection(
 
     return client.create_collection(
         name = collection_name,
-        metadata = {"hnsw:space": space}
+        metadata = {"hnsw:space": space, "embed_model": settings.EMBED_MODEL}
     )
 
 
@@ -111,8 +112,9 @@ def query_by_embedding(
     n_results: int
 ) -> Mapping[str, Any]:
     return collection.query(
-        query_embeddings=list(query_embeddings),
-        n_results=int(n_results)
+        query_embeddings=[list(e) for e in query_embeddings],
+        n_results=int(n_results),
+        include=["documents", "metadatas", "distances"]
     )
 
 
@@ -121,7 +123,7 @@ def _first_or_empty(
     key: str
 ) -> List[Any]:
     groups = result.get(key) or []
-    return groups[0] if groups else []
+    return list(groups[0]) if groups else []
 
 
 def query_single(
@@ -133,13 +135,13 @@ def query_single(
 
     ids = _first_or_empty(result, "ids")
     documents = _first_or_empty(result, "documents")
-    metadata = _first_or_empty(result, "metadata")
+    metadata = _first_or_empty(result, "metadatas")
     distances = _first_or_empty(result, "distances")
 
-    ids = list(ids or [])
-    documents = list(documents or [])
-    metadata = list(metadata or [])
-    distances = list(distances or [])
+    # ids = list(ids or [])
+    # documents = list(documents or [])
+    # metadata = list(metadata or [])
+    # distances = list(distances or [])
 
     m = min(len(ids), len(documents), len(metadata), len(distances))
     return ids[:m], documents[:m], metadata[:m], distances[:m]
