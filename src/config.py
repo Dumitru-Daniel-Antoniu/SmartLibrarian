@@ -16,6 +16,8 @@ class Settings:
     COLLECTION_NAME: str
     TOP_K: int
     TEMPERATURE: float
+    MAX_DISTANCE: float
+    MIN_RESULTS: int
 
 
 def _get_env(name: str, default: Optional[str] = None, required: bool = False) -> str:
@@ -54,7 +56,8 @@ def _load_settings() -> Settings:
     collection_name = _get_env("COLLECTION_NAME", "books")
     top_k = _get_int("TOP_K", 4)
     temperature = _get_float("TEMPERATURE", 0.4)
-
+    max_distance = _get_float("MAX_DISTANCE", 0.65)
+    min_results = _get_int("MIN_RESULTS", 1)
 
     return Settings(
         OPENAI_API_KEY=api_key,
@@ -63,7 +66,9 @@ def _load_settings() -> Settings:
         CHROMA_PATH=chroma_path,
         COLLECTION_NAME=collection_name,
         TOP_K=top_k,
-        TEMPERATURE=temperature
+        TEMPERATURE=temperature,
+        MAX_DISTANCE=max_distance,
+        MIN_RESULTS=min_results
     )
 
 
@@ -85,4 +90,6 @@ def print_config_summary() -> None:
         f"  COLLECTION     = {settings.COLLECTION_NAME}\n"
         f"  TOP_K          = {settings.TOP_K}\n"
         f"  TEMPERATURE    = {settings.TEMPERATURE}\n"
+        f"  MAX_DISTANCE   = {settings.MAX_DISTANCE}\n"
+        f"  MIN_RESULTS    = {settings.MIN_RESULTS}\n"
     )
