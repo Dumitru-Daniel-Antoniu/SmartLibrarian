@@ -1,8 +1,14 @@
+import re
+
 from typing import Any, Dict, List, Optional
 
 from src.config import settings
 from src.embeddings import embed_text
 from src.vectorstore import get_or_create_collection, query_single
+
+
+def _token_count(text: str) -> int:
+    return len(re.findall(r"\w+", text.lower()))
 
 
 def _pack_hits(
@@ -33,16 +39,39 @@ def semantic_search(
 
     qv = embed_text(query)
 
+    query_tokens = _token_count(query)
+
+    max_distance = float(settings.MAX_DISTANCE)
+
     collection = get_or_create_collection()
 
-    meta = getattr(collection, "metadatas", {}) or {}
-    build_with = meta.get("embed_model")
-    if build_with and build_with != settings.EMBED_MODEL:
-        raise RuntimeError("Not the same embedding model used")
-    else:
-        print("Equal")
-
     ids, documents, metadata, distances = query_single(collection, qv, n_results=top_k)
+
+    if query_tokens <= 2:
+        max_distance = min(0.75, max_distance + 0.05)
+    elif query_tokens >= 8:
+        max_distance = max(0.50, max_distance - 0.05)
+
+    if not distances or min(distances) > max_distance:
+        return {
+            "query": query,
+            "k": top_k,
+            "hits": []
+        }
+
+    filtered = [(i, d) for i, d in enumerate(distances) if d <= max_distance]
+    if len(filtered) < int(settings.MIN_RESULTS):
+        return {
+            "query": query,
+            "k": top_k,
+            "hits": []
+        }
+
+    indices = [i for i, _ in sorted(filtered, key=lambda x: x[1])]
+    ids = [ids[i] for i in indices]
+    documents = [documents[i] for i in indices]
+    metadata = [metadata[i] for i in indices]
+    distances = [distances[i] for i in indices]
 
     hits = _pack_hits(ids, documents, metadata, distances)
 
