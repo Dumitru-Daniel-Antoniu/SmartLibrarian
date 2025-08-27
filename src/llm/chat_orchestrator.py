@@ -6,6 +6,12 @@ from src.retriever import semantic_search
 from src.tools.summaries_tool import TOOLS, call_tool
 
 
+"""
+Chat orchestrator for book recommendations using OpenAI chat completions.
+Performs semantic search on book summaries, formats context, and interacts with tools to generate friendly book recommendations.
+"""
+
+
 _client = OpenAI()
 
 
@@ -13,11 +19,30 @@ def _one_line(
     text: str,
     max_len: int = 160
 ) -> str:
+    """
+    Extract the first line from a text and truncate it to a maximum length.
+
+    Args:
+        text (str): Input text.
+        max_len (int): Maximum length of the output line.
+
+    Returns:
+        str: Truncated first line of the input text.
+    """
     line = text.splitlines()[0].strip() if text else ""
     return (line[: max_len - 1] + "...") if len(line) > max_len else line
 
 
 def _format_rag_context(hits: List[Dict[str, Any]]) -> str:
+    """
+    Format a list of semantic search hits into a readable string for context.
+
+    Args:
+        hits (List[Dict[str, Any]]): List of search result dictionaries.
+
+    Returns:
+        str: Formatted string listing candidate books with snippets and distances.
+    """
     lines = []
     for i, h in enumerate(hits, start=1):
         title = h.get("title", "").strip()
@@ -35,6 +60,15 @@ def _format_rag_context(hits: List[Dict[str, Any]]) -> str:
 
 
 def answer_user_query(user_text: str) -> Dict[str, Any]:
+    """
+    Generate a book recommendation based on user query using semantic search and OpenAI chat completions.
+
+    Args:
+        user_text (str): The user's query about books.
+
+    Returns:
+        Dict[str, Any]: Dictionary containing the final response text, search hits, and the original query.
+    """
     rag = semantic_search(user_text, k = settings.TOP_K)
     hits = rag.get("hits", [])
 
@@ -140,6 +174,7 @@ def answer_user_query(user_text: str) -> Dict[str, Any]:
     }
 
 
+# If case for running the script directly for testing purposes
 if __name__ == "__main__":
     demo_query = "What is the Lord of the Rings book about?"
     output = answer_user_query(demo_query)

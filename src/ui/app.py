@@ -3,6 +3,13 @@ import streamlit as st
 from src.config import settings
 from src.llm.chat_orchestrator import answer_user_query
 
+
+"""
+Streamlit web app for SmartLibrarian: an interactive book recommendation chatbot.
+Displays chat interface, handles user queries, and shows semantic search results from the library.
+"""
+
+
 st.set_page_config(page_title="SmartLibrarian", page_icon="📚")
 
 with st.sidebar:

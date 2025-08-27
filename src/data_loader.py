@@ -2,11 +2,23 @@ import re
 from pathlib import Path
 
 
+"""
+Data loader for book summaries.
+Reads and parses a text dataset of book summaries, returning structured records for downstream processing.
+"""
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATASET_PATH = BASE_DIR / "data" / "book_summaries.txt"
 
 
 def load_book_summaries() -> list[dict[str, str]]:
+    """
+    Load and parse book summaries from the dataset file.
+
+    Returns:
+        list[dict[str, str]]: List of dictionaries, each containing 'title' and 'summary' keys.
+    """
     with open(DATASET_PATH, "r", encoding="utf-8") as dataset_file:
         text = dataset_file.read()
 

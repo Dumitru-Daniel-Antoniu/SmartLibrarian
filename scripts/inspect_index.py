@@ -8,7 +8,16 @@ from src.vectorstore import get_or_create_collection, count_documents
 from src.retriever import semantic_search
 
 
+"""
+Script to inspect the Chroma vector index for book summaries.
+Allows previewing indexed titles and running semantic search queries via command-line arguments.
+"""
+
+
 def print_header() -> None:
+    """
+    Print header information about the Chroma index and configuration settings.
+    """
     print("=== SmartLibrarian: Inspect Index ===")
     print(f"Chroma path: {settings.CHROMA_PATH}")
     print(f"Collection name: {settings.COLLECTION_NAME}")
@@ -17,7 +26,10 @@ def print_header() -> None:
     print("-" * 50)
 
 
-def show_titles(limit: int) -> None:
+def show_titles() -> None:
+    """
+    Display the book titles from the Chroma collection as a quick preview.
+    """
     collection = get_or_create_collection()
     n = count_documents(collection)
     print(f"Indexed items: {n}")
@@ -36,6 +48,13 @@ def show_titles(limit: int) -> None:
 
 
 def run_queries(queries: List[str], k: int) -> None:
+    """
+    Run semantic search queries against the Chroma index and display results.
+
+    Args:
+        queries (List[str]): List of query strings to search for.
+        k (int): Number of top results to return per query.
+    """
     for q in queries:
         print(f"Query: '{q}'  (top {k})")
         try:
@@ -55,6 +74,12 @@ def run_queries(queries: List[str], k: int) -> None:
 
 
 def parse_args() -> argparse.Namespace:
+    """
+    Parse command-line arguments for inspecting the Chroma index.
+
+    Returns:
+        argparse.Namespace: Parsed arguments.
+    """
     p = argparse.ArgumentParser(description="Inspect Chroma index and run sample queries.")
     p.add_argument("--show", type=int, default=5, help="Show up to N titles as a quick preview.")
     p.add_argument("--k", type=int, default=None, help="Top-k results per query (overrides settings.TOP_K).")
@@ -63,9 +88,14 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """
+    Main entry point for inspecting the Chroma index.
+
+    Parses arguments, prints header, previews titles, and runs queries if provided.
+    """
     args = parse_args()
     print_header()
-    show_titles(args.show)
+    show_titles()
 
     k = args.k if args.k is not None else int(settings.TOP_K)
     if args.query:
