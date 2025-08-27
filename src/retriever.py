@@ -7,7 +7,22 @@ from src.embeddings import embed_text
 from src.vectorstore import get_or_create_collection, query_single
 
 
+"""
+Semantic search retriever for book summaries.
+Embeds queries, searches the vectorstore, filters results by distance, and returns structured matches for downstream use.
+"""
+
+
 def _token_count(text: str) -> int:
+    """
+    Count the number of word tokens in the input text.
+
+    Args:
+        text (str): Input text to tokenize.
+
+    Returns:
+        int: Number of word tokens.
+    """
     return len(re.findall(r"\w+", text.lower()))
 
 
@@ -17,6 +32,18 @@ def _pack_hits(
     metadata: List[Dict[str, Any]],
     distances: List[float]
 ) -> List[Dict[str, Any]]:
+    """
+    Package search results into a list of dictionaries with id, title, summary, and distance.
+
+    Args:
+        ids (list[str]): List of document IDs.
+        documents (List[str]): List of document summaries.
+        metadata (List[Dict[str, Any]]): List of metadata dictionaries for each document.
+        distances (List[float]): List of distance scores for each result.
+
+    Returns:
+        List[Dict[str, Any]]: List of structured search result dictionaries.
+    """
     out: List[Dict[str, Any]] = []
     for i in range(len(ids)):
         title = metadata[i].get("title", "")
@@ -35,6 +62,16 @@ def semantic_search(
     query: str,
     k: Optional[int] = None
 ) -> Dict[str, Any]:
+    """
+    Perform semantic search for a query against the book summaries vectorstore.
+
+    Args:
+        query (str): The search query string.
+        k (Optional[int]): Number of top results to return. Defaults to settings.TOP_K.
+
+    Returns:
+        Dict[str, Any]: Dictionary containing the query, k, filtered hits, and raw result data.
+    """
     top_k = int(k) if k is not None else int(settings.TOP_K)
 
     qv = embed_text(query)
@@ -88,10 +125,10 @@ def semantic_search(
     }
 
 
+# If case for running the script directly for testing purposes
 if __name__ == "__main__":
     test_query = "Friendship and magic"
     result = semantic_search(test_query, k=4)
     print(f"Query: {result['query']}")
     for i, h in enumerate(result["hits"], start=1):
         print(f"{i}. {h['title']}  (distance={h['distance']:.4f})")
-

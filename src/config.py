@@ -4,6 +4,12 @@ from typing import Optional
 from dotenv import load_dotenv
 
 
+"""
+Configuration loader for SmartLibrarian.
+Loads environment variables, validates settings, and provides access to application configuration for models, vectorstore, and runtime parameters.
+"""
+
+
 load_dotenv()
 
 
@@ -21,6 +27,20 @@ class Settings:
 
 
 def _get_env(name: str, default: Optional[str] = None, required: bool = False) -> str:
+    """
+    Retrieve an environment variable value, with optional default and required check.
+
+    Args:
+        name (str): Name of the environment variable.
+        default (Optional[str]): Default value if not set.
+        required (bool): Whether the variable is required.
+
+    Returns:
+        str: The environment variable value.
+
+    Raises:
+        RuntimeError: If required and not set.
+    """
     val = os.getenv(name, default)
     if required and (val is None or val == ""):
         raise RuntimeError(f"Missing required environment variable: {name}")
@@ -28,6 +48,19 @@ def _get_env(name: str, default: Optional[str] = None, required: bool = False) -
 
 
 def _get_int(name: str, default: int) -> int:
+    """
+    Retrieve an environment variable and convert it to an integer.
+
+    Args:
+        name (str): Name of the environment variable.
+        default (int): Default value if not set.
+
+    Returns:
+        int: The integer value.
+
+    Raises:
+        RuntimeError: If conversion fails.
+    """
     raw = os.getenv(name)
     if raw is None or raw == "":
         return default
@@ -38,6 +71,19 @@ def _get_int(name: str, default: int) -> int:
 
 
 def _get_float(name: str, default: float) -> float:
+    """
+    Retrieve an environment variable and convert it to a float.
+
+    Args:
+        name (str): Name of the environment variable.
+        default (float): Default value if not set.
+
+    Returns:
+        float: The float value.
+
+    Raises:
+        RuntimeError: If conversion fails.
+    """
     raw = os.getenv(name)
     if raw is None or raw == "":
         return default
@@ -48,6 +94,15 @@ def _get_float(name: str, default: float) -> float:
 
 
 def _load_settings() -> Settings:
+    """
+    Load all configuration settings from environment variables.
+
+    Returns:
+        Settings: Dataclass containing all configuration values.
+
+    Raises:
+        RuntimeError: If required variables are missing or invalid.
+    """
     api_key = _get_env("OPENAI_API_KEY", required=True)
 
     embed_model = _get_env("EMBED_MODEL", "text-embedding-3-small")
@@ -76,12 +131,21 @@ settings = _load_settings()
 
 
 def require_openai_key() -> None:
+    """
+    Ensure the OpenAI API key is configured.
+
+    Raises:
+        RuntimeError: If the API key is missing.
+    """
     if not settings.OPENAI_API_KEY:
         raise RuntimeError("OPENAI_API_KEY is not configured.")
 
 
 # Verification step to ensure the variables are loaded correctly
 def print_config_summary() -> None:
+    """
+    Print a summary of the current configuration settings to the console.
+    """
     print(
         "Config:\n"
         f"  EMBED_MODEL    = {settings.EMBED_MODEL}\n"

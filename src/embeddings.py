@@ -5,6 +5,12 @@ from openai import OpenAI, OpenAIError, RateLimitError, APITimeoutError
 from src.config import settings
 
 
+"""
+Embedding utilities for text data using OpenAI models.
+Provides functions to batch embed multiple texts or single texts, with retry and exponential backoff for API robustness.
+"""
+
+
 _client = OpenAI()
 
 
@@ -15,6 +21,23 @@ def embed_texts(
     max_retries: int = 3,
     backoff_seconds: float = 1.5
 ) -> List[List[float]]:
+    """
+    Generate embeddings for a sequence of texts using the specified OpenAI model.
+
+    Args:
+        texts (Sequence[str]): List of texts to embed.
+        model (Optional[str]): Model name to use for embedding. Defaults to settings.EMBED_MODEL.
+        batch_size (int): Number of texts per API request batch.
+        max_retries (int): Maximum number of retry attempts on API errors.
+        backoff_seconds (float): Base seconds for exponential backoff between retries.
+
+    Returns:
+        List[List[float]]: List of embedding vectors for each input text.
+
+    Raises:
+        ValueError: If texts is empty.
+        RuntimeError: If embedding fails after max_retries attempts.
+    """
     if not texts:
         raise ValueError("The function embed_texts() received an empty list of texts.")
 
@@ -50,6 +73,21 @@ def embed_text(
     max_retries: int = 3,
     backoff_seconds: float = 1.5
 ) -> List[float]:
+    """
+    Generate an embedding for a single text using the specified OpenAI model.
+
+    Args:
+        text (str): The text to embed.
+        model (Optional[str]): Model name to use for embedding. Defaults to settings.EMBED_MODEL.
+        max_retries (int): Maximum number of retry attempts on API errors.
+        backoff_seconds (float): Base seconds for exponential backoff between retries.
+
+    Returns:
+        List[float]: Embedding vector for the input text.
+
+    Raises:
+        RuntimeError: If embedding fails after max_retries attempts.
+    """
     return embed_texts(
         [text],
         model = model,
