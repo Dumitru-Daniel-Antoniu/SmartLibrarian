@@ -5,8 +5,9 @@ from src.llm.chat_orchestrator import answer_user_query
 
 
 """
-Streamlit web app for SmartLibrarian: an interactive book recommendation chatbot.
-Displays chat interface, handles user queries, and shows semantic search results from the library.
+Streamlit web app for SmartLibrarian: an interactive book recommendation
+chatbot. Displays chat interface, handles user queries, and shows semantic
+search results from the library.
 """
 
 
@@ -26,7 +27,8 @@ if "messages" not in st.session_state:
             "role": "assistant",
             "content": (
                 "Hello! Tell me what kind of book you're looking for-"
-                "e.g., *friendship and magic*, *quiet sci-fi* or *adventure stories*"
+                "e.g., *friendship and magic*, *quiet sci-fi* or "
+                "*adventure stories*"
             )
         }
     ]
@@ -34,7 +36,10 @@ if "last_hits" not in st.session_state:
     st.session_state.last_hits = []
 
 st.title("📚 SmartLibrarian")
-st.caption("Type what you enjoy (themes, genres, etc.). I'll search the library and recommend one book.")
+st.caption(
+    "Type what you enjoy (themes, genres, etc.). "
+    "I'll search the library and recommend one book."
+)
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -47,10 +52,16 @@ if user_text:
         st.markdown(user_text)
 
     result = answer_user_query(user_text)
-    assistant_text = result.get("final_text", "Sorry, I couldn't generate a response.")
+    assistant_text = result.get(
+        "final_text",
+        "Sorry, I couldn't generate a response."
+    )
     st.session_state.last_hits = result.get("hits", [])
 
-    st.session_state.messages.append({"role": "assistant", "content": assistant_text})
+    st.session_state.messages.append(
+        {"role": "assistant",
+         "content": assistant_text}
+    )
     with st.chat_message("assistant"):
         st.markdown(assistant_text)
 
@@ -62,7 +73,9 @@ if user_text:
                     distances = h.get("distance", None)
                     first_line = (h.get("summary", "").splitlines() or [""])[0]
                     if distances is not None:
-                        st.write(f"**{i}) {title}** \n_distance: {distances:.4f}_")
+                        st.write(
+                            f"**{i}) {title}** \n_distance: {distances:.4f}_"
+                        )
                     else:
                         st.write(f"**{i}) {title}**")
                     st.caption(first_line)

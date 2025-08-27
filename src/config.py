@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 
 """
 Configuration loader for SmartLibrarian.
-Loads environment variables, validates settings, and provides access to application configuration for models, vectorstore, and runtime parameters.
+Loads environment variables, validates settings and provides
+access to application configuration for models, vectorstore and
+runtime parameters.
 """
 
 
@@ -26,9 +28,14 @@ class Settings:
     MIN_RESULTS: int
 
 
-def _get_env(name: str, default: Optional[str] = None, required: bool = False) -> str:
+def _get_env(
+    name: str,
+    default: Optional[str] = None,
+    required: bool = False
+) -> str:
     """
-    Retrieve an environment variable value, with optional default and required check.
+    Retrieve an environment variable value,
+    with optional default and required check.
 
     Args:
         name (str): Name of the environment variable.

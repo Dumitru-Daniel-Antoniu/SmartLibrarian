@@ -4,7 +4,8 @@ from pathlib import Path
 
 """
 Data loader for book summaries.
-Reads and parses a text dataset of book summaries, returning structured records for downstream processing.
+Reads and parses a text dataset of book summaries,
+returning structured records for downstream processing.
 """
 
 
@@ -17,12 +18,17 @@ def load_book_summaries() -> list[dict[str, str]]:
     Load and parse book summaries from the dataset file.
 
     Returns:
-        list[dict[str, str]]: List of dictionaries, each containing 'title' and 'summary' keys.
+        list[dict[str, str]]: List of dictionaries, each containing
+        'title' and 'summary' keys.
     """
     with open(DATASET_PATH, "r", encoding="utf-8") as dataset_file:
         text = dataset_file.read()
 
-        chunks = [c.strip() for c in re.split(r"^## Title:\s*", text, flags=re.MULTILINE) if c.strip()]
+        chunks = [
+            c.strip() for c in
+            re.split(r"^## Title:\s*", text, flags=re.MULTILINE)
+            if c.strip()
+        ]
 
         records = []
         for c in chunks:

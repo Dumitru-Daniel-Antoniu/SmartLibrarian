@@ -13,8 +13,9 @@ from src.vectorstore import (
 
 
 """
-Script to build a vector index of book summaries using OpenAI embeddings and Chroma vectorstore.
-Loads book summaries, embeds them, and stores them in a Chroma collection for later retrieval.
+Script to build a vector index of book summaries using OpenAI embeddings and
+Chroma vectorstore. Loads book summaries, embeds them, and stores them in a
+Chroma collection for later retrieval.
 """
 
 
@@ -39,7 +40,8 @@ def _make_payload(records: List[Dict[str, str]]):
         records (List[Dict[str, str]]): List of book summary records.
 
     Returns:
-        Tuple[List[str], List[Dict[str, str]], List[str]]: Documents, metadata, and IDs.
+        Tuple[List[str], List[Dict[str, str]], List[str]]:
+          Documents, metadata, and IDs.
     """
     documents = [r["summary"] for r in records]
     metadata = [{"title": r["title"]} for r in records]
@@ -67,15 +69,26 @@ def main() -> None:
 
     documents, metadata, ids = _make_payload(records)
 
-    print(f"Embedding {len(documents)} summaries with model '{settings.EMBED_MODEL}'...")
+    print(f"Embedding {len(documents)} summaries with model "
+          f"'{settings.EMBED_MODEL}'...")
     vectors = embed_texts(documents, batch_size=64)
     print("Embeddings done.")
 
-    print(f"Recreating collection '{settings.COLLECTION_NAME}' at {settings.CHROMA_PATH}")
-    collection = recreate_collection(name=settings.COLLECTION_NAME, space="cosine")
+    print(f"Recreating collection '{settings.COLLECTION_NAME}' "
+          f"at {settings.CHROMA_PATH}")
+    collection = recreate_collection(
+        name=settings.COLLECTION_NAME,
+        space="cosine"
+    )
 
     print("Adding documents to Chroma collection...")
-    add_documents(collection, documents=documents, embeddings=vectors, metadata=metadata, ids=ids)
+    add_documents(
+        collection,
+        documents=documents,
+        embeddings=vectors,
+        metadata=metadata,
+        ids=ids
+    )
 
     collection = get_or_create_collection(settings.COLLECTION_NAME)
     n = count_documents(collection)
@@ -87,6 +100,7 @@ def main() -> None:
         print(f"  - {metadata[i]['title']}  (id={ids[i]})")
 
     print("=== Build complete ===")
+
 
 if __name__ == "__main__":
     sys.exit(main())

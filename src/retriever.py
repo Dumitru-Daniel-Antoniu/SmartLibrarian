@@ -9,7 +9,8 @@ from src.vectorstore import get_or_create_collection, query_single
 
 """
 Semantic search retriever for book summaries.
-Embeds queries, searches the vectorstore, filters results by distance, and returns structured matches for downstream use.
+Embeds queries, searches the vectorstore, filters results by
+distance and returns structured matches for downstream use.
 """
 
 
@@ -33,12 +34,14 @@ def _pack_hits(
     distances: List[float]
 ) -> List[Dict[str, Any]]:
     """
-    Package search results into a list of dictionaries with id, title, summary, and distance.
+    Package search results into a list of dictionaries with id,
+    title, summary and distance.
 
     Args:
         ids (list[str]): List of document IDs.
         documents (List[str]): List of document summaries.
-        metadata (List[Dict[str, Any]]): List of metadata dictionaries for each document.
+        metadata (List[Dict[str, Any]]): List of metadata
+                                         dictionaries for each document.
         distances (List[float]): List of distance scores for each result.
 
     Returns:
@@ -63,14 +66,16 @@ def semantic_search(
     k: Optional[int] = None
 ) -> Dict[str, Any]:
     """
-    Perform semantic search for a query against the book summaries vectorstore.
+    Perform semantic search for a query against the book
+    summaries vectorstore.
 
     Args:
         query (str): The search query string.
-        k (Optional[int]): Number of top results to return. Defaults to settings.TOP_K.
+        k (Optional[int]): Number of top results to return.
 
     Returns:
-        Dict[str, Any]: Dictionary containing the query, k, filtered hits, and raw result data.
+        Dict[str, Any]: Dictionary containing the query, k,
+                        filtered hits and raw result data.
     """
     top_k = int(k) if k is not None else int(settings.TOP_K)
 
@@ -82,7 +87,11 @@ def semantic_search(
 
     collection = get_or_create_collection()
 
-    ids, documents, metadata, distances = query_single(collection, qv, n_results=top_k)
+    ids, documents, metadata, distances = query_single(
+        collection,
+        qv,
+        n_results=top_k
+    )
 
     if query_tokens <= 2:
         max_distance = min(0.75, max_distance + 0.05)

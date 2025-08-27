@@ -8,7 +8,8 @@ from src.tools.summaries_tool import TOOLS, call_tool
 
 """
 Chat orchestrator for book recommendations using OpenAI chat completions.
-Performs semantic search on book summaries, formats context, and interacts with tools to generate friendly book recommendations.
+Performs semantic search on book summaries, formats context and interacts
+with tools to generate friendly book recommendations.
 """
 
 
@@ -41,7 +42,8 @@ def _format_rag_context(hits: List[Dict[str, Any]]) -> str:
         hits (List[Dict[str, Any]]): List of search result dictionaries.
 
     Returns:
-        str: Formatted string listing candidate books with snippets and distances.
+        str: Formatted string listing candidate books with snippets
+             and distances.
     """
     lines = []
     for i, h in enumerate(hits, start=1):
@@ -61,15 +63,17 @@ def _format_rag_context(hits: List[Dict[str, Any]]) -> str:
 
 def answer_user_query(user_text: str) -> Dict[str, Any]:
     """
-    Generate a book recommendation based on user query using semantic search and OpenAI chat completions.
+    Generate a book recommendation based on user query using
+    semantic search and OpenAI chat completions.
 
     Args:
         user_text (str): The user's query about books.
 
     Returns:
-        Dict[str, Any]: Dictionary containing the final response text, search hits, and the original query.
+        Dict[str, Any]: Dictionary containing the final response
+        text, search hits and the original query.
     """
-    rag = semantic_search(user_text, k = settings.TOP_K)
+    rag = semantic_search(user_text, k=settings.TOP_K)
     hits = rag.get("hits", [])
 
     if not hits:
@@ -90,17 +94,20 @@ def answer_user_query(user_text: str) -> Dict[str, Any]:
         "1) Pick ONE title (prefer lowest distance).\n"
         "2) Call tool `get_summary_by_title` with that exact title.\n"
         "3) After tool output, send ONE message:\n"
-        "   - Start with the title in **bold** and a short friendly recommendation.\n"
+        "   - Start with the title in **bold** and a short "
+        "friendly recommendation.\n"
         "   - Add 2–3 brief reasons why it fits.\n"
         "   - End with: 'Here’s a quick summary:' + the full summary.\n\n"
         "Rules:\n"
         "- Do NOT invent titles.\n"
         "- If user asks about a title and it is in candidates, pick it. "
-        "The title must match exactly (e. g. The Lord of the Rings is not the same "
-        "as The Lord of the Strings).\n"
-        "- If request is not about books or no candidate matches, return no content and no tool call.\n"
+        "The title must match exactly (e. g. The Lord of the Rings is not "
+        "the same as The Lord of the Strings).\n"
+        "- If request is not about books or no candidate matches, return no "
+        "content and no tool call.\n"
         "- Never explain tool mechanics."
-        "- The response should be natural, friendly, engaging and conversational."
+        "- The response should be natural, friendly, engaging "
+        "and conversational."
     )
 
     messages = [
@@ -165,7 +172,9 @@ def answer_user_query(user_text: str) -> Dict[str, Any]:
         messages=messages
     )
 
-    final_text = final_result.choices[0].message.content if result.choices else "Sorry, I had trouble generating a response."
+    final_text = final_result.choices[0].message.content \
+        if result.choices \
+        else "Sorry, I had trouble generating a response."
 
     return {
         "final_text": final_text,

@@ -10,7 +10,8 @@ from src.config import settings
 
 """
 ChromaDB vectorstore utilities for SmartLibrarian.
-Provides functions to manage collections, add/upsert/query documents, and handle embeddings for semantic search.
+Provides functions to manage collections, add/upsert/query documents
+and handle embeddings for semantic search.
 """
 
 
@@ -46,7 +47,8 @@ def get_or_create_collection(
     space: str = "cosine"
 ) -> chromadb.api.models.Collection.Collection:
     """
-    Retrieve an existing ChromaDB collection or create a new one if it does not exist.
+    Retrieve an existing ChromaDB collection or create a new one if it
+    does not exist.
 
     Args:
         name (Optional[str]): Name of the collection.
@@ -63,8 +65,8 @@ def get_or_create_collection(
     except Exception:
         print("Collection does not exist")
         return client.create_collection(
-            name = collection_name,
-            metadata = {"hnsw:space": space, "embed_model": settings.EMBED_MODEL}
+            name=collection_name,
+            metadata={"hnsw:space": space, "embed_model": settings.EMBED_MODEL}
         )
 
 
@@ -91,8 +93,8 @@ def recreate_collection(
         pass
 
     return client.create_collection(
-        name = collection_name,
-        metadata = {"hnsw:space": space, "embed_model": settings.EMBED_MODEL}
+        name=collection_name,
+        metadata={"hnsw:space": space, "embed_model": settings.EMBED_MODEL}
     )
 
 
@@ -103,7 +105,8 @@ def count_documents(
     Count the number of documents in a ChromaDB collection.
 
     Args:
-        collection (chromadb.api.models.Collection.Collection): The collection to count documents in.
+        collection (chromadb.api.models.Collection.Collection):
+          The collection to count documents in.
 
     Returns:
         int: Number of documents in the collection.
@@ -122,7 +125,8 @@ def add_documents(
     Add new documents, embeddings, metadata and ids to a ChromaDB collection.
 
     Args:
-        collection (chromadb.api.models.Collection.Collection): The target collection.
+        collection (chromadb.api.models.Collection.Collection):
+          The target collection.
         documents (Sequence[str]): List of document texts.
         embeddings (Sequence[Sequence[float]]): List of embedding vectors.
         metadata (Sequence[Dict[str, Any]]): List of metadata dictionaries.
@@ -134,7 +138,8 @@ def add_documents(
     n = len(documents)
     if not (len(embeddings) == len(metadata) == len(ids) == n):
         raise ValueError(
-            "Documents, embeddings, metadata and ids must have the same length."
+            "Documents, embeddings, metadata and ids "
+            "must have the same length."
         )
 
     collection.add(
@@ -153,13 +158,17 @@ def upsert_documents(
     ids: Sequence[str]
 ) -> None:
     """
-    Upsert (add or update) documents, embeddings, metadata and ids in a ChromaDB collection.
+    Upsert (add or update) documents, embeddings, metadata
+    and ids in a ChromaDB collection.
 
     Args:
-        collection (chromadb.api.models.Collection.Collection): The target collection.
+        collection (chromadb.api.models.Collection.Collection):
+          The target collection.
         documents (Sequence[str]): List of document texts.
-        embeddings (Sequence[Sequence[float]]): List of embedding vectors.
-        metadata (Sequence[Dict[str, Any]]): List of metadata dictionaries.
+        embeddings (Sequence[Sequence[float]]):
+          List of embedding vectors.
+        metadata (Sequence[Dict[str, Any]]):
+          List of metadata dictionaries.
         ids (Sequence[str]): List of document IDs.
 
     Raises:
@@ -168,7 +177,8 @@ def upsert_documents(
     n = len(documents)
     if not (len(embeddings) == len(metadata) == len(ids) == n):
         raise ValueError(
-            "Documents, embeddings, metadata and ids must have the same length."
+            "Documents, embeddings, metadata and ids "
+            "must have the same length."
         )
 
     collection.upsert(
@@ -185,15 +195,19 @@ def query_by_embedding(
     n_results: int
 ) -> Mapping[str, Any]:
     """
-    Query a ChromaDB collection using one or more embedding vectors.
+    Query a ChromaDB collection using one or
+    more embedding vectors.
 
     Args:
-        collection (chromadb.api.models.Collection.Collection): The collection to query.
-        query_embeddings (Sequence[Sequence[float]]): List of query embedding vectors.
+        collection (chromadb.api.models.Collection.Collection):
+          The collection to query.
+        query_embeddings (Sequence[Sequence[float]]):
+          List of query embedding vectors.
         n_results (int): Number of top results to return.
 
     Returns:
-        Mapping[str, Any]: Query result containing documents, metadatas and distances.
+        Mapping[str, Any]: Query result containing documents,
+        metadatas and distances.
     """
     return collection.query(
         query_embeddings=[list(e) for e in query_embeddings],
@@ -207,7 +221,8 @@ def _first_or_empty(
     key: str
 ) -> List[Any]:
     """
-    Extract the first group of results for a given key, or return an empty list.
+    Extract the first group of results for a given key,
+    or return an empty list.
 
     Args:
         result (Mapping[str, Any]): Query result mapping.
@@ -226,18 +241,25 @@ def query_single(
     n_results: int
 ) -> Tuple[List[str], List[str], List[Dict[str, Any]], List[float]]:
     """
-    Query a ChromaDB collection with a single embedding and return structured results.
+    Query a ChromaDB collection with a single embedding and return
+    structured results.
 
     Args:
-        collection (chromadb.api.models.Collection.Collection): The collection to query.
+        collection (chromadb.api.models.Collection.Collection):
+          The collection to query.
         query_embedding (Sequence[float]): Query embedding vector.
         n_results (int): Number of top results to return.
 
     Returns:
         Tuple[List[str], List[str], List[Dict[str, Any]], List[float]]:
-            Lists of IDs, documents, metadata, and distances for the top results.
+            Lists of IDs, documents, metadata
+            and distances for the top results.
     """
-    result = query_by_embedding(collection, [list(query_embedding)], n_results)
+    result = query_by_embedding(
+        collection,
+        [list(query_embedding)],
+        n_results
+    )
 
     ids = _first_or_empty(result, "ids")
     documents = _first_or_empty(result, "documents")

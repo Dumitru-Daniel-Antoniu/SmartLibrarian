@@ -1,4 +1,4 @@
-from typing import Iterable, List, Sequence, Optional
+from typing import List, Sequence, Optional
 import time
 
 from openai import OpenAI, OpenAIError, RateLimitError, APITimeoutError
@@ -7,7 +7,8 @@ from src.config import settings
 
 """
 Embedding utilities for text data using OpenAI models.
-Provides functions to batch embed multiple texts or single texts, with retry and exponential backoff for API robustness.
+Provides functions to batch embed multiple texts or single texts, with
+retry and exponential backoff for API robustness.
 """
 
 
@@ -22,14 +23,16 @@ def embed_texts(
     backoff_seconds: float = 1.5
 ) -> List[List[float]]:
     """
-    Generate embeddings for a sequence of texts using the specified OpenAI model.
+    Generate embeddings for a sequence of texts using the
+    specified OpenAI model.
 
     Args:
         texts (Sequence[str]): List of texts to embed.
-        model (Optional[str]): Model name to use for embedding. Defaults to settings.EMBED_MODEL.
+        model (Optional[str]): Model name to use for embedding.
         batch_size (int): Number of texts per API request batch.
         max_retries (int): Maximum number of retry attempts on API errors.
-        backoff_seconds (float): Base seconds for exponential backoff between retries.
+        backoff_seconds (float): Base seconds for exponential backoff
+                                 between retries.
 
     Returns:
         List[List[float]]: List of embedding vectors for each input text.
@@ -39,27 +42,37 @@ def embed_texts(
         RuntimeError: If embedding fails after max_retries attempts.
     """
     if not texts:
-        raise ValueError("The function embed_texts() received an empty list of texts.")
+        raise ValueError(
+            "The function embed_texts() received an empty list of texts."
+        )
 
     use_model = model or settings.EMBED_MODEL
 
     results: List[List[float]] = [None] * len(texts)
 
     for start in range(0, len(texts), batch_size):
-        chunk = texts[start : start + batch_size]
+        chunk = texts[start: start + batch_size]
 
         attempt = 0
         while True:
             try:
-                response = _client.embeddings.create(model=use_model, input=list(chunk))
+                response = _client.embeddings.create(
+                    model=use_model,
+                    input=list(chunk)
+                )
                 for i, item in enumerate(response.data):
                     results[start + i] = item.embedding
                 break
-            except (RateLimitError, APITimeoutError, OpenAIError) as e:
+            except (
+                RateLimitError,
+                APITimeoutError,
+                OpenAIError
+            ) as e:
                 attempt += 1
                 if attempt > max_retries:
                     raise RuntimeError(
-                        f"Embedding request failed after {max_retries} attempts: {e}"
+                        f"Embedding request failed after "
+                        f"{max_retries} attempts: {e}"
                     )
                 sleep_time = backoff_seconds ** attempt
                 time.sleep(sleep_time)
@@ -74,13 +87,15 @@ def embed_text(
     backoff_seconds: float = 1.5
 ) -> List[float]:
     """
-    Generate an embedding for a single text using the specified OpenAI model.
+    Generate an embedding for a single text using
+    the specified OpenAI model.
 
     Args:
         text (str): The text to embed.
-        model (Optional[str]): Model name to use for embedding. Defaults to settings.EMBED_MODEL.
+        model (Optional[str]): Model name to use for embedding.
         max_retries (int): Maximum number of retry attempts on API errors.
-        backoff_seconds (float): Base seconds for exponential backoff between retries.
+        backoff_seconds (float): Base seconds for exponential
+                                 backoff between retries.
 
     Returns:
         List[float]: Embedding vector for the input text.
@@ -90,10 +105,10 @@ def embed_text(
     """
     return embed_texts(
         [text],
-        model = model,
-        batch_size = 1,
-        max_retries = max_retries,
-        backoff_seconds = backoff_seconds
+        model=model,
+        batch_size=1,
+        max_retries=max_retries,
+        backoff_seconds=backoff_seconds
     )[0]
 
 
@@ -107,4 +122,5 @@ if __name__ == "__main__":
 
     embeddings = embed_texts(sample_texts)
     for i, text in enumerate(sample_texts):
-        print(f"Text: {text}\nEmbedding: {embeddings[i]}\nLength: {len(embeddings[i])}\n")
+        print(f"Text: {text}\nEmbedding: {embeddings[i]}"
+              f"\nLength: {len(embeddings[i])}\n")

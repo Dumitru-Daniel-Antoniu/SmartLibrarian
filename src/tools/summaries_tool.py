@@ -9,7 +9,8 @@ from src.data_loader import load_book_summaries
 
 """
 Toolset for retrieving book summaries by title from the loaded library.
-Provides functions for exact title matching, summary lookup, and tool dispatching for integration with chat or API workflows.
+Provides functions for exact title matching, summary lookup, and tool
+dispatching for integration with chat or API workflows.
 """
 
 
@@ -78,15 +79,17 @@ TOOLS: List[dict] = [
         "function": {
             "name": "get_summary_by_title",
             "description": (
-                "Return the full summary for a single book title from the library."
-                "Use the EXACT title text from the provided candidate list."
+                "Return the full summary for a single book title from the "
+                "library. Use the EXACT title text from the provided "
+                "candidate list."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "title": {
                         "type": "string",
-                        "description": "Exact book title to retrieve the full summary for."
+                        "description": "Exact book title to retrieve "
+                                       "the full summary for."
                     }
                 },
                 "required": ["title"],
@@ -119,7 +122,7 @@ def call_tool(tool_name: str, arguments_json: str) -> str:
     try:
         arguments = json.loads(arguments_json or "{}")
     except json.JSONDecodeError:
-        return f"Invalid JSON for tool arguments."
+        return "Invalid JSON for tool arguments."
 
     if tool_name == "get_summary_by_title":
         title = arguments.get("title", "")

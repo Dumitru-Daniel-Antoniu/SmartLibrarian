@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-from typing import Any, Dict, List
+from typing import List
 
 from src.config import settings
 from src.vectorstore import get_or_create_collection, count_documents
@@ -10,7 +10,8 @@ from src.retriever import semantic_search
 
 """
 Script to inspect the Chroma vector index for book summaries.
-Allows previewing indexed titles and running semantic search queries via command-line arguments.
+Allows previewing indexed titles and running semantic search
+queries via command-line arguments.
 """
 
 
@@ -64,7 +65,10 @@ def run_queries(queries: List[str], k: int) -> None:
             for i, h in enumerate(result["hits"], start=1):
                 title = h["title"]
                 distance = h["distance"]
-                snippet = (h["summary"].splitlines()[0] if h["summary"] else "")[:120]
+                snippet = (
+                              h["summary"].splitlines()[0]
+                              if h["summary"] else ""
+                          )[:120]
                 print(f"{i:>2}. {title} [distance={distance:.4f}]")
                 if snippet:
                     print(f"{snippet}...")
@@ -80,10 +84,27 @@ def parse_args() -> argparse.Namespace:
     Returns:
         argparse.Namespace: Parsed arguments.
     """
-    p = argparse.ArgumentParser(description="Inspect Chroma index and run sample queries.")
-    p.add_argument("--show", type=int, default=5, help="Show up to N titles as a quick preview.")
-    p.add_argument("--k", type=int, default=None, help="Top-k results per query (overrides settings.TOP_K).")
-    p.add_argument("--query", action="append", default=[], help="Add a query to run (repeatable).")
+    p = argparse.ArgumentParser(
+        description="Inspect Chroma index and run sample queries."
+    )
+    p.add_argument(
+        "--show",
+        type=int,
+        default=5,
+        help="Show up to N titles as a quick preview."
+    )
+    p.add_argument(
+        "--k",
+        type=int,
+        default=None,
+        help="Top-k results per query (overrides settings.TOP_K)."
+    )
+    p.add_argument(
+        "--query",
+        action="append",
+        default=[],
+        help="Add a query to run (repeatable)."
+    )
     return p.parse_args()
 
 
@@ -91,7 +112,8 @@ def main() -> None:
     """
     Main entry point for inspecting the Chroma index.
 
-    Parses arguments, prints header, previews titles, and runs queries if provided.
+    Parses arguments, prints header, previews titles
+    and runs queries if provided.
     """
     args = parse_args()
     print_header()
