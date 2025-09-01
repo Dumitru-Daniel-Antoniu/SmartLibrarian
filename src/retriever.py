@@ -93,10 +93,12 @@ def semantic_search(
         n_results=top_k
     )
 
-    if query_tokens <= 2:
-        max_distance = min(0.75, max_distance + 0.05)
-    elif query_tokens >= 8:
-        max_distance = max(0.50, max_distance - 0.05)
+    if query_tokens <= 15:
+        max_distance = 0.75
+    elif query_tokens > 15 and query_tokens <= 30:
+        max_distance = 0.65
+    else:
+        max_distance = 0.55
 
     if not distances or min(distances) > max_distance:
         return {

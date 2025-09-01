@@ -65,21 +65,6 @@ if user_text:
     with st.chat_message("assistant"):
         st.markdown(assistant_text)
 
-        hits = st.session_state.last_hits or []
-        if hits:
-            with st.expander("🔎 RAG debug: top matches"):
-                for i, h in enumerate(hits, start=1):
-                    title = h.get("title", "(untitled)")
-                    distances = h.get("distance", None)
-                    first_line = (h.get("summary", "").splitlines() or [""])[0]
-                    if distances is not None:
-                        st.write(
-                            f"**{i}) {title}** \n_distance: {distances:.4f}_"
-                        )
-                    else:
-                        st.write(f"**{i}) {title}**")
-                    st.caption(first_line)
-
 st.markdown("---")
 st.caption(
     "Tip: try queries like *I want a book about liberty and social control.*, "
